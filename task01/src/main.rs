@@ -49,18 +49,17 @@ fn mult_mat2_vec(a: &[[f32; 2]; 2], b: &[f32; 2]) -> [f32; 2] {
 fn time_integration_implicit(rv0: &mut (f32, f32), dt: f32) {
     let r0 = rv0.0;
     let v0 = rv0.1;
+    let f0 = -1f32 / (r0 * r0);
     // ----------------------
     // write some code below
 
     let dfdr = 2f32 / (r0 * r0 * r0); // hint!
 
-    // let a_mat = [[???, ???], [???, ???]]; // hint
-    // let b_vec = [???, ???]; // hint
-    // let a_mat_inv = inverse_matrix_2x2(&a_mat).unwrap(); // hint
-    // let res = mult_mat2_vec(&a_mat_inv, &b_vec); // hint
-    // *rv0 = (res[0], res[1]); // hint
-
-    *rv0 = (r0, v0); // delete this line
+    let a_mat: [[f32; 2]; 2] = [[1.0, -dt], [-dt * dfdr, 1.0]]; // hint
+    let b_vec = [r0, v0 + dt * f0 - dfdr * dt * r0]; // hint
+    let a_mat_inv = inverse_matrix_2x2(&a_mat).unwrap(); // hint
+    let res = mult_mat2_vec(&a_mat_inv, &b_vec); // hint
+    *rv0 = (res[0], res[1]); // hint
 
     // no further edit from here
     // ----------------------
