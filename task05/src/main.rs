@@ -5,16 +5,23 @@ type Vec2f = nalgebra::Vector2<f32>;
 /// this function returns the index of pixel that is north-west (left up) corner of the square.
 /// return None if there is no square connecting center that include position `xy`.
 pub fn pixel_north_west_to_xy(xy: &[f32; 2], img_resolution: usize) -> Option<usize> {
-    let x = (xy[0] * img_resolution as f32) - 0.5f32;
-    let y = (xy[1] * img_resolution as f32) - 0.5f32;
+    let r = 1.0 / img_resolution as f32;
 
-    // ------------------
-    // implement some code below.
+    // Flip y axis to match image coordinate system
+    let x = xy[0];
+    let y = 1.0 - xy[1];
 
-    None // comment out
+    // Compute grid indices of NW pixel
+    let ix = ((x - 0.5 * r) / r).floor() as isize;
+    let iy = ((y - 0.5 * r) / r).floor() as isize;
 
-    // no edit from here
-    // -----------------
+    // Check bounds
+    if ix < 0 || iy < 0 || ix + 1 >= img_resolution as isize || iy + 1 >= img_resolution as isize {
+        return None;
+    }
+
+    let index = (iy as usize) * img_resolution + (ix as usize);
+    Some(index)
 }
 
 /// test for `pixel_north_west_to_xy` function.
@@ -62,8 +69,10 @@ pub fn gradient(xy: &[f32; 2], img_resolution: usize, pix2val: &[f32]) -> [f32; 
     let val_se = pix2val[i_pix_se];
     // ---------------------
     // write some code below to compute gradient
+    let x_der = (1.0 - ry) * (val_ne - val_nw) + ry * (val_se - val_sw);
+    let y_der = (1.0 - rx) * (val_nw - val_sw) + rx * (val_ne - val_se);
 
-    [0f32, 0f32] // comment out
+    [x_der, y_der]
 
     // no edit from here
     // -----------------
@@ -109,7 +118,7 @@ fn solve_laplace_gauss_seidel_on_grid(
             // ------------------------
             // write some code below
 
-            // pix2val[i_pix_center] =  // hint
+            pix2val[i_pix_center] = 0.25 * (val_east + val_north + val_south + val_west)
 
             // no edit from here
             // -------------------------------
